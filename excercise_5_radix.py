@@ -50,9 +50,10 @@ class Cl_radix_tree:
             child is split into a prefix node and a suffix node.
         """
         st_node = self.st_root
-
+        
         while True:
-            # Try to find a child whose label shares a prefix with the word
+            b_found_match = False   # Track whether any child matched
+
             for st_child in st_node.lst_children:
                 n_prefix_len = self._common_prefix(st_child.s_label, i_s_word)
 
@@ -60,23 +61,35 @@ class Cl_radix_tree:
                     # No common prefix → try next child
                     continue
 
-                # Case 1: full match of child label → descend into that child
+                # A matching child was found
+                b_found_match = True
+
+                # Case 1: full match of child label → descend
                 if n_prefix_len == len(st_child.s_label):
                     st_node = st_child
                     i_s_word = i_s_word[n_prefix_len:]
 
-                    # If the entire word has been consumed, insertion is complete
+                    # Entire word consumed → insertion complete
                     if i_s_word == "":
                         return
-                    break  # Continue scanning deeper
 
-                # Case 2: partial match → split the child node
+                    # Continue outer while-loop
+                    # (no break needed)
+                    # We simply stop scanning siblings
+                    # by forcing the for-loop to end early
+                    break
+
+                # Case 2: partial match → split
                 return self._split_and_insert(st_node, st_child, n_prefix_len, i_s_word)
 
-            else:
-                # No matching child found → create a new leaf node
-                st_node.lst_children.append(St_node(s_label=i_s_word))
-                return
+            # If we matched a child and broke out of the for-loop,
+            # continue the while-loop to descend further.
+            if b_found_match:
+                continue
+
+            # No matching child found → create new leaf
+            st_node.lst_children.append(St_node(s_label=i_s_word))
+            return
 
     def _split_and_insert(self, i_st_parent, i_st_child, i_n_prefix_len, i_s_word):
         """
