@@ -125,19 +125,19 @@ class Cl_radix_tree:
         s_new_suffix = i_s_word[i_n_prefix_len:]
 
         # Create intermediate node holding the common prefix
-        mid = St_node(s_label=s_prefix)
+        st_node_mid = St_node(s_label=s_prefix)
 
         # Replace old child with the new intermediate node
         i_st_parent.lst_children.remove(i_st_child)
-        i_st_parent.lst_children.append(mid)
+        i_st_parent.lst_children.append(st_node_mid)
 
         # Old child becomes a child of the intermediate node
         i_st_child.s_label = s_child_suffix
-        mid.lst_children.append(i_st_child)
+        st_node_mid.lst_children.append(i_st_child)
 
         # Insert new branch for the remainder of the inserted word
         if s_new_suffix != "":
-            mid.lst_children.append(St_node(s_label=s_new_suffix))
+            st_node_mid.lst_children.append(St_node(s_label=s_new_suffix))
 
         return
 
@@ -184,6 +184,9 @@ if __name__ == "__main__":
     cl_tree = Cl_radix_tree()
 
     for s_data in ["roman", "romulus", "robert", "teletubbies", "romani"]:
+        print(f"ADDING: {s_data}")
         cl_tree.insert(s_data)
+        print("=========TREE STRUCTURE=========")
+        cl_tree.display()
 
-    cl_tree.display()
+    
