@@ -27,3 +27,26 @@ with same priority arrival order
 
 use dataclass
 
+# biseect
+
+# binary search tree
+
+each node has a K
+
+left have smakker key K
+
+right all have bigger key K
+
+l and r are both BST
+
+# Trie
+
+tree where the string is the traversal of letters
+
+A - B C 
+
+AB
+AC
+
+
+
