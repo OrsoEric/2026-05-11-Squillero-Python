@@ -89,9 +89,10 @@ class Cl_graph:
     # ACCESS METHODS
     # -------------------------------------------------
 
-    def get_weight(self, i_n_node_id):
-        n_index = self.d_node_index[i_n_node_id]
-        return self.g_lln_weight[n_index]
+    def get_weight(self, i_n_node_start, i_n_node_end):
+        n_row = self.d_node_index[i_n_node_start]
+        n_col = self.d_node_index[i_n_node_end]
+        return self.g_lln_weight[n_row, n_col]
 
     def get_node(self):
         return list(self.l_node)

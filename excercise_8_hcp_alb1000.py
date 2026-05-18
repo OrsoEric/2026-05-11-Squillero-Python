@@ -161,6 +161,78 @@ def explore( i_cl_graph: Cl_graph, i_s_node_start: str ) -> bool:
 
     return False #OK    
 
+import heapq
+
+
+def shortest_path(i_cl_graph: Cl_graph, start_node, end_node):
+    """
+    Compute the minimum-cost path between two nodes
+    using Dijkstra's algorithm.
+
+    Returns:
+        (distance, path)
+    """
+
+    # Priority queue: (distance, node)
+    pq = [(0, start_node)]
+
+    # Distance from start to each node
+    distances = {start_node: 0}
+
+    # Previous node in optimal path
+    previous = {}
+
+    # Visited nodes
+    visited = set()
+
+    while pq:
+        current_distance, current_node = heapq.heappop(pq)
+
+        # Skip already processed nodes
+        if current_node in visited:
+            continue
+
+        visited.add(current_node)
+
+        # Stop if destination reached
+        if current_node == end_node:
+            break
+
+        # Explore neighbours
+        for neighbour in i_cl_graph.iter_neighbour(current_node):
+
+            # Get edge weight
+            weight = i_cl_graph.get_weight(current_node, neighbour)
+
+            new_distance = current_distance + weight
+
+            # Relaxation step
+            if neighbour not in distances or new_distance < distances[neighbour]:
+                distances[neighbour] = new_distance
+                previous[neighbour] = current_node
+
+                heapq.heappush(
+                    pq,
+                    (new_distance, neighbour)
+                )
+
+    # No path found
+    if end_node not in distances:
+        return float("inf"), []
+
+    # Reconstruct path
+    path = []
+    node = end_node
+
+    while node != start_node:
+        path.append(node)
+        node = previous[node]
+
+    path.append(start_node)
+    path.reverse()
+
+    return distances[end_node], path
+
 def test_bench():
     print(f"file: {C_S_FILE}")
     cl_graph = read_graph(C_S_FILE)
@@ -172,9 +244,21 @@ def test_bench():
 
     explore(cl_graph, d_start)
 
+    n_start = 99
+    n_end = 42
+
+    distance, path = shortest_path(
+        cl_graph,
+        n_start,
+        n_end
+    )
 
 
-
+    print("\nShortest path")
+    print(f"From : {n_start}")
+    print(f"To   : {n_end}")
+    print(f"Cost : {distance}")
+    print(f"Path : {path}")
 
 if __name__ == "__main__":
     test_bench()
