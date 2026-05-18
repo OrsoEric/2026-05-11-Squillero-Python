@@ -71,11 +71,13 @@ class Cl_graph:
                 print("   (no connections)")
 
 
+
+
 # -------------------------
 # TEST BENCH
 # -------------------------
 
-if __name__ == "__main__":
+def test_bench():
     cl_graph = Cl_graph()
 
     # Five European cities
@@ -95,3 +97,6 @@ if __name__ == "__main__":
 
     print("Rail network graph (edges):")
     cl_graph.show()
+
+if __name__ == "__main__":
+    test_bench()
