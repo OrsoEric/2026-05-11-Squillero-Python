@@ -4,7 +4,11 @@
 # add_node( i_s_name)
 # add_link_one_way( i_s_node_start, i_s_node_end, i_n_link_weight )
 # add_link_two_way( i_s_node_start, i_s_node_end, i_n_link_weight )
-# 
+# add get_weight( i_s_start, i_s_end )
+# add iter_node that iterate nodes
+# add iter_neighbour(i_s_node) that iterates neigbour of a node
+# add show that use twoo iterators to show the
+#
 # TEST BENCH
 # add a __main__ example
 # it's the distance of rail connectionss between five european cities
