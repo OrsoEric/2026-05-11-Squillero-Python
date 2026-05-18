@@ -25,6 +25,80 @@ Neighbours of London (ITERATOR):
  
 -------------------------------------------
 
+lls_adjacent = cl_graph.show_adjacent()
+
+for s_node, l_links in zip(cl_graph.l_s_nodes, lls_adjacent):
+    print(f"\n{s_node} ->")
+    for s_neigh, n_w in l_links:
+        print(f"   {s_neigh} ({n_w} km)")
+
+
+Paris ->
+   London (344.0 km)
+   Berlin (878.0 km)
+   Rome (1105.0 km)
+   Madrid (1053.0 km)
+
+London ->
+   Paris (344.0 km)
+   Amsterdam (357.0 km)
+
+Berlin ->
+   Paris (878.0 km)
+   Rome (1184.0 km)
+   Amsterdam (577.0 km)
+
+Rome ->
+   Paris (1105.0 km)
+   Berlin (1184.0 km)
+   Madrid (1365.0 km)
+
+Madrid ->
+   Paris (1053.0 km)
+   Rome (1365.0 km)
+
+Amsterdam ->
+   London (357.0 km)
+   Berlin (577.0 km)
+
+---------------------------
+
+print(f"\nITERATE ADJACENCY")
+for s_node in cl_graph.iter_node():
+    print(f"\nNeighbours of {s_node}:")
+    for s_neighbour in cl_graph.neighbour_iter(s_node):
+        print(f">{s_neighbour} - {cl_graph.get_link_weight(s_node,s_neighbour)}")
+
+ITERATE ADJACENCY
+
+Neighbours of Paris:
+>London - 344.0
+>Berlin - 878.0
+>Rome - 1105.0
+>Madrid - 1053.0
+
+Neighbours of London:
+>Paris - 344.0
+>Amsterdam - 357.0
+
+Neighbours of Berlin:
+>Paris - 878.0
+>Rome - 1184.0
+>Amsterdam - 577.0
+
+Neighbours of Rome:
+>Paris - 1105.0
+>Berlin - 1184.0
+>Madrid - 1365.0
+
+Neighbours of Madrid:
+>Paris - 1053.0
+>Rome - 1365.0
+
+Neighbours of Amsterdam:
+>London - 357.0
+>Berlin - 577.0
+
 """
 import numpy as np
 from typing import Optional
@@ -157,6 +231,35 @@ class Cl_graph:
 
         return True
 
+    
+    # ---------------------------------------------------------
+    # Get link weight
+    # ---------------------------------------------------------
+    def get_link_weight(
+        self,
+        i_s_node_start: str,
+        i_s_node_end: str
+    ) -> Optional[float]:
+
+        # Validate inputs
+        if not isinstance(i_s_node_start, str) or not isinstance(i_s_node_end, str):
+            print("ERROR: node names must be strings")
+            return None
+
+        n_start = self._get_node_index(i_s_node_start)
+        n_end = self._get_node_index(i_s_node_end)
+
+        if n_start is None or n_end is None:
+            return None
+
+        weight = self.np_matrix[n_start, n_end]
+
+        # Treat 0 as "no link"
+        if weight == 0:
+            return None
+
+        return float(weight)
+
     # ---------------------------------------------------------
     # Get neighbours
     # ---------------------------------------------------------
@@ -192,8 +295,20 @@ class Cl_graph:
         return l_s_neighbours
 
     # ---------------------------------------------------------
+    # Node iterator
+    # ---------------------------------------------------------
+    def iter_node(self) -> Iterator[str]:
+        """
+        Iterate over all node names in the graph.
+        """
+
+        for s_node in self.l_s_nodes:
+            yield s_node
+
+    # ---------------------------------------------------------
     # Neighbour iterator
     # ---------------------------------------------------------
+
     def neighbour_iter(
         self,
         i_s_node: str
@@ -218,6 +333,29 @@ class Cl_graph:
 
             if n_weight != 0:
                 yield self.l_s_nodes[n_col]
+
+    def show_adjacent(
+        self
+    ) -> list[list[tuple[str, float]]]:
+
+        l_result: list[list[tuple[str, float]]] = []
+
+        # For each node (row in adjacency matrix)
+        for n_row, s_node in enumerate(self.l_s_nodes):
+
+            l_connections: list[tuple[str, float]] = []
+
+            # Scan all possible connections
+            for n_col, n_weight in enumerate(self.np_matrix[n_row]):
+
+                if n_weight != 0:
+                    l_connections.append(
+                        (self.l_s_nodes[n_col], float(n_weight))
+                    )
+
+            l_result.append(l_connections)
+
+        return l_result
 
     # ---------------------------------------------------------
     # Show graph
@@ -249,6 +387,14 @@ class Cl_graph:
                         f"{s_start} -> {s_end} "
                         f"= {n_weight:.0f} km"
                     )
+
+        lls_adjacent = self.show_adjacent()
+
+        for s_node, l_links in zip(cl_graph.l_s_nodes, lls_adjacent):
+            print(f"\n{s_node} ->")
+            for s_neigh, n_w in l_links:
+                print(f"   {s_neigh} ({n_w} km)")
+
 
         print("\n===================================")
         print("ADJACENCY MATRIX")
@@ -354,7 +500,16 @@ if __name__ == "__main__":
     s_target = "London"
     s_target_neighbour = cl_graph.get_neighbour(s_target)
     print(f"neighbour to {s_target} are {s_target_neighbour} ")
-    
+
+    # ---------------------------------------------------------
+    # Iterate nodes
+    # ---------------------------------------------------------
+
+    print("\nAll nodes in graph: (ITERATOR)")
+
+    for s_node in cl_graph.iter_node():
+        print(f" - {s_node}")
+
     # ---------------------------------------------------------
     # Iterate neighbours
     # ---------------------------------------------------------
@@ -362,3 +517,25 @@ if __name__ == "__main__":
 
     for s_neighbour in cl_graph.neighbour_iter(s_target):
         print(f" - {s_neighbour}")
+
+    # ---------------------------------------------------------
+    # ADJACENCY LIST
+    # ---------------------------------------------------------
+
+    lls_adjacent = cl_graph.show_adjacent()
+
+    for s_node, l_links in zip(cl_graph.l_s_nodes, lls_adjacent):
+        print(f"\n{s_node} ->")
+        for s_neigh, n_w in l_links:
+            print(f"   {s_neigh} ({n_w} km)")
+
+
+    # ---------------------------------------------------------
+    # ITERATE ADJACENCY
+    # ---------------------------------------------------------
+
+    print(f"\nITERATE ADJACENCY")
+    for s_node in cl_graph.iter_node():
+        print(f"\nNeighbours of {s_node}:")
+        for s_neighbour in cl_graph.neighbour_iter(s_node):
+            print(f">{s_neighbour} - {cl_graph.get_link_weight(s_node,s_neighbour)}")
