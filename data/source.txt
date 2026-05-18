@@ -1,0 +1,3 @@
+https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/index.html
+https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/tsp.html
+https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/hcp.html
