@@ -11,9 +11,25 @@
 .venv\Scripts\activate
 
 python excercise_6_graph.py
+
+------------------------------------------
+
+print(f"\nNeighbours of {s_target} (ITERATOR):")
+
+for s_neighbour in cl_graph.neighbour_iter(s_target):
+    print(f" - {s_neighbour}")
+    
+Neighbours of London (ITERATOR):
+ - Paris
+ - Amsterdam
+ 
+-------------------------------------------
+
 """
 import numpy as np
 from typing import Optional
+
+from typing import Iterator
 
 
 class Cl_graph:
@@ -176,6 +192,34 @@ class Cl_graph:
         return l_s_neighbours
 
     # ---------------------------------------------------------
+    # Neighbour iterator
+    # ---------------------------------------------------------
+    def neighbour_iter(
+        self,
+        i_s_node: str
+    ) -> Iterator[str]:
+
+        # Check input type
+        if not isinstance(i_s_node, str):
+            print("ERROR: node name must be a string")
+            return
+
+        n_node_index: Optional[int] = self._get_node_index(
+            i_s_node
+        )
+
+        if n_node_index is None:
+            return
+
+        # Iterate through adjacency matrix row
+        for n_col, n_weight in enumerate(
+            self.np_matrix[n_node_index]
+        ):
+
+            if n_weight != 0:
+                yield self.l_s_nodes[n_col]
+
+    # ---------------------------------------------------------
     # Show graph
     # ---------------------------------------------------------
     def show(self) -> bool:
@@ -308,6 +352,13 @@ if __name__ == "__main__":
     cl_graph.show()
     
     s_target = "London"
-    s_target_neighbour = cl_graph.get_neighbour( "London" )
+    s_target_neighbour = cl_graph.get_neighbour(s_target)
     print(f"neighbour to {s_target} are {s_target_neighbour} ")
     
+    # ---------------------------------------------------------
+    # Iterate neighbours
+    # ---------------------------------------------------------
+    print(f"\nNeighbours of {s_target} (ITERATOR):")
+
+    for s_neighbour in cl_graph.neighbour_iter(s_target):
+        print(f" - {s_neighbour}")
