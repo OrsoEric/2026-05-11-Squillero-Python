@@ -7,7 +7,11 @@ from pathlib import Path
 
 #from graph_alist import cl_graph
 
-from excercise_7_graph_dict import Cl_graph
+#from excercise_7_graph_dict import Cl_graph
+
+#from lib.cl_graph import Cl_graph
+
+from lib.cl_graph_matrix_int import Cl_graph
 
 C_S_FILE = Path( "data", "HCP", "alb1000.hcp" )
 print("Looking for:", C_S_FILE.resolve())
@@ -54,7 +58,7 @@ def read_graph(filename):
     # Case 1: Explicit distance matrix
     # -----------------------------
     if format == 'EXPLICIT':
-        # Read all edge weights into a queue for sequential processing
+        # Read all edge weights into a l_queue for sequential processing
         data = deque(
             int(d) for d in extract_section('EDGE_WEIGHT_SECTION', whole_file).split()
         )
@@ -64,6 +68,8 @@ def read_graph(filename):
             for c1 in range(n_cities):
                 for c2 in range(c1):
                     w = data.popleft()
+                    cl_graph.add_node(c1)
+                    cl_graph.add_node(c2)
                     cl_graph.add_link_one_way(c1, c2, w)
                     cl_graph.add_link_one_way(c2, c1, w)
                 # diagonal element (self-loop) must be 0
@@ -74,6 +80,8 @@ def read_graph(filename):
             for c1 in range(n_cities):
                 for c2 in range(1, n_cities - c1):
                     w = data.popleft()
+                    cl_graph.add_node(c1)
+                    cl_graph.add_node(c2)
                     cl_graph.add_link_one_way(c1, c2, w)
                     cl_graph.add_link_one_way(c2, c1, w)
 
@@ -96,6 +104,8 @@ def read_graph(filename):
                 (cities[c1][0] - cities[c2][0]) ** 2 +
                 (cities[c1][1] - cities[c2][1]) ** 2
             )
+            cl_graph.add_node(c1)
+            cl_graph.add_node(c2)
             cl_graph.add_link_one_way(c1, c2, d)
             cl_graph.add_link_one_way(c2, c1, d)
 
@@ -110,6 +120,9 @@ def read_graph(filename):
             n1, n2 = map(int, l.split())
 
             # Convert 1-based indexing to 0-based indexing
+            cl_graph.add_node(n1-1)
+            cl_graph.add_node(n2-1)
+            #print(f"adding nodes {n1} and {n2}")
             cl_graph.add_link_one_way(n1 - 1, n2 - 1, 1)
             cl_graph.add_link_one_way(n2 - 1, n1 - 1, 1)
 
@@ -123,10 +136,43 @@ def read_graph(filename):
     return cl_graph
 
 
+def explore( i_cl_graph: Cl_graph, i_s_node_start: str ) -> bool:
+    ds_visited = set()
+    l_queue = deque()  # Start from node 0
+    l_queue.append(i_s_node_start)
+
+    while l_queue:
+        s_node = l_queue.popleft()
+        if s_node not in ds_visited:
+            print(f"scanning: {s_node}")
+            ds_visited.add(s_node)
+            # Add neighbors to the l_queue
+
+            ls_neighbor = i_cl_graph.get_neighbour(s_node)
+            print(f"Node {s_node} has {len(ls_neighbor)} neighbours:{ls_neighbor}")
+
+            for s_neighbor in i_cl_graph.iter_neighbour(s_node):
+                print(f"Node {s_node} has Neighbour:{s_neighbor}")
+                if s_neighbor not in ds_visited:
+                    print(f"New node discovered: {s_neighbor}")
+                    l_queue.append(s_neighbor)  
+
+
+
+    return False #OK    
+
 def test_bench():
     print(f"file: {C_S_FILE}")
     cl_graph = read_graph(C_S_FILE)
-    cl_graph.show()
+
+    l_nodes = list(cl_graph.get_node())
+    d_start = l_nodes[0]
+
+    #cl_graph.show()
+
+    explore(cl_graph, d_start)
+
+
 
 
 
