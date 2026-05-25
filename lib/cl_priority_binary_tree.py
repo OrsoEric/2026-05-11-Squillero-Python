@@ -200,6 +200,39 @@ class Cl_priority_binary_tree:
 
         return top_label, top_priority
 
+    def pop_lowest(self):
+        """Remove and return the element with the lowest priority."""
+        if not self.g_ls_label:
+            return None
+
+        # find index of minimum priority element
+        min_idx = 0
+        min_pri = self.g_ln_priority[0]
+
+        for i in range(1, len(self.g_ln_priority)):
+            if self.g_ln_priority[i] < min_pri:
+                min_pri = self.g_ln_priority[i]
+                min_idx = i
+
+        # extract info
+        lbl = self.g_ls_label[min_idx]
+        pri = self.g_ln_priority[min_idx]
+
+        last = len(self.g_ls_label) - 1
+
+        # move last element into min_idx and remove last
+        self._swap(min_idx, last)
+        self.g_ls_label.pop()
+        self.g_ln_priority.pop()
+
+        # restore heap property
+        if min_idx < len(self.g_ls_label):
+            self._bubble_up(min_idx)
+            self._bubble_down(min_idx)
+
+        return lbl, pri
+
+
 
     def update(self):
         """Rebuild heap from scratch."""
@@ -231,6 +264,9 @@ class Cl_priority_binary_tree:
         # right child
         if right < n:
             self._show_tree_rec(right, indent + 4)
+
+    def __len__(self):
+        return len(self.g_ls_label)
 
 
     def show_stats(self):
