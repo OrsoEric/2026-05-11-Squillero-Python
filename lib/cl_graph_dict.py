@@ -58,6 +58,9 @@ class Cl_graph:
     def get_node(self):
         return self.g_d_node.keys()
 
+    def get_node_index( self, i_s_node_name : str ) -> int:
+        return self.g_d_node[i_s_node_name].n_id
+
     def get_weight(self, i_s_start, i_s_end):
         return self.g_d_link.get((i_s_start, i_s_end))
 

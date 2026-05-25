@@ -27,14 +27,31 @@ def dijkstra( i_cl_graph : Cl_graph, i_s_start : str, i_s_end : str ) -> bool:
 
     cl_frontier = Cl_priority_binary_tree()
 
-    
+    #compute the indexes of the nodes
+    i_n_start_index = cl_graph.get_node_index(i_s_start)
+    print(f"Start {i_s_start} {i_n_start_index}")
+    i_n_end_index = cl_graph.get_node_index(i_s_end)
+    print(f"Start {i_s_end} {i_n_end_index}")
 
+    #create a vector of distance, one per node
+    ln_cost = lib_numpy.empty((cl_graph.num_node), dtype=float)   
+    #distance is infinite to all nodes
+    ln_cost.fill(lib_numpy.inf)
+    #distance to itself is zero
+    ln_cost[i_n_start_index] = 0
+    print(f"Cost vector {ln_cost}")
 
     #create the frontier
     l_link_start= cl_graph.get_neighbour(i_s_start)
-    for st_link in l_link_start:
+    for s_node_end, n_link_cost in l_link_start:
+        
         #append right
-        cl_frontier.push( st_link[0], st_link[1]) 
+        cl_frontier.push( s_node_end, n_link_cost) 
+        #index of the destination of this link
+        i_n_index = cl_graph.get_node_index(s_node_end)
+        ln_cost[i_n_index] = n_link_cost
+
+    print(f"Cost vector after frontier  {ln_cost}")
 
     print(f"Frontier: {l_link_start}")
 
