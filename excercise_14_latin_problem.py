@@ -19,3 +19,150 @@ Let him say, who can, how they crossed the river so that not even one of the sis
 
 traduci in un grafo
 """
+
+"""
+first, how do I represent a solution? I use a vector where each index is a meaning, and the index is their location
+
+vector:
+ma, mb, mc, fa, fb, fc
+
+position:
+0, 1, 2 
+
+I need a function that given a solution will tell me if the solution is allowed
+
+each node is a solution
+
+an arc is changing the index
+
+load on boat 0->1 of up to two person
+
+unload from boat 1->2 of up to two person
+
+I don't have other operators
+
+"""
+
+from typing import List
+
+from dataclasses import dataclass, field
+
+from enum import IntEnum
+
+from itertools import product
+
+class E_agent(IntEnum):
+    MA = 0
+    MB = 1
+    MC = 2
+    FA = 3
+    FB = 4
+    FC = 5
+
+class E_location(IntEnum):
+    START = 0
+    BOAT = 1
+    GOAL = 2
+
+    def __repr__(self):
+        return str(self.value)
+
+@dataclass
+class St_solution:
+    ln_location: List[int] = field(default_factory=lambda: [ E_location.START, E_location.START, E_location.START, E_location.START, E_location.START, E_location.START ])
+
+    def __post_init__(self):
+        if len(self.ln_location) != 6:
+            raise ValueError("Vector must contain exactly 6 positions")
+
+        for n_index in self.ln_location:
+            if n_index not in (0, 1, 2):
+                raise ValueError("Each position must be 0, 1, or 2")
+
+    def get(self, i_e_agent: E_agent) -> int:
+        return self.ln_location[i_e_agent]
+
+    def set(self, i_e_agent: E_agent, i_n_value: int) -> None:
+        if ln_location not in (0, 1, 2):
+            raise ValueError("Value must be 0, 1, or 2")
+        self.ln_location[i_e_agent] = i_n_value
+
+    def is_invalid(self)->bool:
+        """
+        [0,0,0,0,0,0] is valid. each female has their associated male
+        [1,0,0,1,0,0] is valid. MA is with FA on BOAT
+        [1,1,0,1,0,0] is invalid. three on the boat at one time
+        [1,0,0,0,1,0] is invalid. MA is with FB on BOAT
+        [2,0,0,0,2,0] is invalid. MA is with FB on GOAL
+        [0,0,0,2,2,2] is valid. female on goal have no opposite male with them
+
+        It's invalid if there are three on boat
+        It's valid if a female is with the associated male in a location
+        It's invalid if a female Fx is together with the opposite male(all but x) in a location
+
+        """
+
+        # -------------------------------------------------
+        # Rule 1: boat capacity
+        # -------------------------------------------------
+        if sum(1 for n_location in self.ln_location if n_location == E_location.BOAT) > 2:
+            return True #INVALID
+
+        # -------------------------------------------------
+        # Rule 2: female and male
+        # -------------------------------------------------
+        # for all pairs, if the male and female are in same place, that's valid
+
+        if self.ln_location[E_agent.MA] == self.ln_location[E_agent.FA] and self.ln_location[E_agent.MB] == self.ln_location[E_agent.FB] and self.ln_location[E_agent.MC] == self.ln_location[E_agent.FC]:
+            return False #VALID
+
+        # -------------------------------------------------
+        # Rule 3: all females together
+        # -------------------------------------------------
+
+        if self.ln_location[E_agent.FA] == self.ln_location[E_agent.FB] and self.ln_location[E_agent.FA] == self.ln_location[E_agent.FC]:
+            return False #VALID
+
+
+        return True #INVALID
+
+    def __str__(self) -> str:
+        # converts: [E_location.START, E_location.BOAT, ...]
+        # into:     [0, 1, ...]
+        return str([int(x) for x in self.ln_location])
+
+def test_bench():
+
+    st_solution = St_solution()
+
+    st_solution.ln_location = [ E_location.START, E_location.START, E_location.START, E_location.START, E_location.START, E_location.START ]
+
+    print(st_solution.is_invalid())
+
+
+def list_valid_states():
+
+    n_valid : int = 0
+    n_invalid : int = 0
+
+    st_solution = St_solution()
+    # all possible combinations of 6 positions
+    for combo in product(E_location, repeat=6):
+
+        st_solution.ln_location = list(combo)
+
+        # example
+        if not st_solution.is_invalid():
+            print("VALID:", st_solution.ln_location)
+            n_valid += 1
+        else:
+            n_invalid += 1
+
+    print(f"VALID: {n_valid}")
+    print(f"INVALID: {n_invalid}")
+
+
+if __name__ == "__main__":
+    #test_bench()
+
+    list_valid_states()
