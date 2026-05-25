@@ -50,6 +50,11 @@ class Cl_graph:
 
 
     # -------- query --------
+
+    @property
+    def num_node(self) -> int:
+        return len(self.g_d_node)
+
     def get_node(self):
         return self.g_d_node.keys()
 
@@ -62,6 +67,17 @@ class Cl_graph:
             if start == i_s_node:
                 ls_neighbour.append((end, weight))
         return ls_neighbour
+
+    # -------- iterators for link as node indices --------
+    def iter_link_node_index(self):
+        """
+        Iterate over links but return node indices instead of labels.
+        Example: ('Rome','Paris',800) -> (0,2,800)
+        """
+        for (start_label, end_label), w in self.g_d_link.items():
+            start_id = self.g_d_node[start_label].n_id
+            end_id = self.g_d_node[end_label].n_id
+            yield start_id, end_id, float(w)
 
     # -------- iterators --------
     def iter_node(self):
