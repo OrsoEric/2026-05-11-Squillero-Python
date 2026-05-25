@@ -77,14 +77,15 @@ def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> list:
 
     return ln_special
 
-def save_maze(i_s_filename: Path, i_cl_graph: Cl_graph ) -> bool:
+def save_maze(i_s_filename: Path, i_cl_graph: Cl_graph, i_l_path: list) -> bool:
     """
     Save a graph back into ASCII maze form.
-    - i_s_start and i_s_end are node names like "13,1"
-    - All nodes in the graph are walkable ('.'), except:
-        start -> 'S'
-        end   -> 'E'
-    - Everything else becomes '#'
+    - i_l_path is a list of node labels like ["1,13", "1,12", ...]
+    - Path cells are marked with 'O'
+    - Start is 'S'
+    - End is 'E'
+    - Walkable nodes are '.'
+    - Everything else is '#'
     """
 
     # --- determine maze bounds ---
@@ -106,13 +107,27 @@ def save_maze(i_s_filename: Path, i_cl_graph: Cl_graph ) -> bool:
         r, c = map(int, node.s_label.split(","))
         maze[r][c] = "."
 
+    # --- mark path ---
+    for s_label in i_l_path:
+        r, c = map(int, s_label.split(","))
+        maze[r][c] = "O"
+
+    # --- mark start and end ---
+    s_start = i_l_path[0]
+    s_end   = i_l_path[-1]
+
+    r_s, c_s = map(int, s_start.split(","))
+    r_e, c_e = map(int, s_end.split(","))
+
+    maze[r_s][c_s] = "S"
+    maze[r_e][c_e] = "E"
+
     # --- write to file ---
     with i_s_filename.open("w") as f:
         for row in maze:
             f.write("".join(row) + "\n")
 
     return True
-
 
 
 def dummy_graph( i_cl_graph ):
@@ -136,17 +151,19 @@ def test_bench():
 
     print(f"Start and End: {lnn_start_end}")
 
-    save_maze(Path("data","excercise13.out"), cl_graph )
+    
    
     cl_graph.show()
 
     i_s_node_start = f"{lnn_start_end[0][0]},{lnn_start_end[0][1]}"
     i_s_node_end = f"{lnn_start_end[1][0]},{lnn_start_end[1][1]}"
 
-    n_distance = graph_distance( cl_graph, i_s_node_start, i_s_node_end )
+    ln_solution = graph_distance( cl_graph, i_s_node_start, i_s_node_end )
 
     #dijkstra(cl_graph, "London", "Berlin")
-    print(f"Final Distance: {n_distance}")
+    print(f"Final Distance: {ln_solution}")
+
+    save_maze(Path("data","excercise13.out"), cl_graph, ln_solution )
 
 
 if __name__ == "__main__":
