@@ -1,3 +1,17 @@
+"""
+===================
+Frontier: [13,1:28.0, 13,9:28.0, 3,7:28.0, 11,8:27.0, 11,7:28.0]
+POP 11,8 27.0
+  Neigh of 11,8: [('11,7', 1), ('11,9', 1)]
+===================
+Frontier: [13,1:28.0, 13,9:28.0, 3,7:28.0, 11,7:28.0]
+POP 13,1 28.0
+Reached destination
+Final cost = 28.0
+Final Distance: True
+"""
+
+
 from pathlib import Path
 
 from lib.cl_graph_dict import Cl_graph
