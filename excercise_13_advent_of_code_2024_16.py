@@ -2,9 +2,11 @@ from pathlib import Path
 
 from lib.cl_graph_dict import Cl_graph
 
-from lib.cl_priority_binary_tree import Cl_priority_binary_tree
 
-def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> bool:
+
+from lib.fn_graph_distance import graph_distance
+
+def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> list:
     """
     Load an ASCII maze and convert it into a graph.
     Walkable tiles: 'S', '.', 'E'
@@ -19,6 +21,8 @@ def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> bool:
     n_rows = len(ls_lines)
     n_cols = len(ls_lines[0])
 
+    ln_special : List = list()
+
     # Helper to check walkability
     def is_walkable(ch: str) -> bool:
         return ch in ("S", ".", "E")
@@ -27,6 +31,10 @@ def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> bool:
     for r in range(n_rows):
         for c in range(n_cols):
             ch = ls_lines[r][c]
+            if ch=="S":
+                ln_special.append((r,c))
+            if ch=="E":
+                ln_special.append((r,c))
             if is_walkable(ch):
                 node_name = f"{r},{c}"
                 i_cl_graph.add_node(node_name)
@@ -53,7 +61,7 @@ def load_maze_from_file(i_s_filename: Path, i_cl_graph: Cl_graph) -> bool:
                         # undirected link, cost = 1
                         i_cl_graph.add_link_two_way(node_a, node_b, 1)
 
-    return True
+    return ln_special
 
 def save_maze(i_s_filename: Path, i_cl_graph: Cl_graph ) -> bool:
     """
@@ -109,16 +117,22 @@ def test_bench():
 
     cl_graph = Cl_graph()
 
-    load_maze_from_file( Path("data","aoc_2024_16.map"), cl_graph )
+    lnn_start_end = load_maze_from_file( Path("data","aoc_2024_16.map"), cl_graph )
+    #lnn_start_end = load_maze_from_file( Path("data","maze_4x4.map"), cl_graph )
+
+    print(f"Start and End: {lnn_start_end}")
 
     save_maze(Path("data","excercise13.out"), cl_graph )
    
     cl_graph.show()
 
+    i_s_node_start = f"{lnn_start_end[0][0]},{lnn_start_end[0][1]}"
+    i_s_node_end = f"{lnn_start_end[1][0]},{lnn_start_end[1][1]}"
 
+    n_distance = graph_distance( cl_graph, i_s_node_start, i_s_node_end )
 
     #dijkstra(cl_graph, "London", "Berlin")
-
+    print(f"Final Distance: {n_distance}")
 
 
 if __name__ == "__main__":

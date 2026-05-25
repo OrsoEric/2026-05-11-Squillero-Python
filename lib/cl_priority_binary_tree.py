@@ -268,10 +268,13 @@ class Cl_priority_binary_tree:
     def __len__(self):
         return len(self.g_ls_label)
 
+    def __str__(self):
+        return "[" + ", ".join(f"{lbl}:{pri}" for lbl, pri in zip(self.g_ls_label, self.g_ln_priority)) + "]"
+
 
     def show_stats(self):
         print("Queue size:", len(self.g_ls_label))
         print("Elements:")
         for lbl, pr in zip(self.g_ls_label, self.g_ln_priority):
-            print(f"  {lbl}: {pr}")
+            print(f"({lbl}:{pr})-")
         print()
