@@ -25,6 +25,82 @@ control_rod_up and control_rod down medium priority
 turn_on_light low priority
 """
 
+"""
+python excercise_10_updatable_priority_queue.py 
+
+=== INITIAL STATS ===
+Queue size: 0
+Elements:
+
+>>> Adding low‑priority event: turn_on_light
+
+--- TREE ---
+> turn_on_light(10)
+------------
+
+>>> Adding medium‑priority event: control_rod_up
+
+--- TREE ---
+> control_rod_up(50)
+    > turn_on_light(10)
+------------
+
+>>> Adding medium‑priority event: control_rod_down
+
+--- TREE ---
+> control_rod_up(50)
+    > turn_on_light(10)
+    > control_rod_down(50)
+------------
+
+>>> Adding HIGH‑priority event: core_meltdown
+
+--- TREE ---
+> core_meltdown(100)
+    > control_rod_up(50)
+        > turn_on_light(10)
+    > control_rod_down(50)
+------------
+
+
+=== FINAL STATS ===
+Queue size: 4
+Elements:
+  core_meltdown: 100
+  control_rod_up: 50
+  control_rod_down: 50
+  turn_on_light: 10
+
+
+=== POPPING EVENTS ===
+>>> Removing low‑priority event: turn_on_light
+
+--- TREE ---
+> core_meltdown(100)
+    > control_rod_up(50)
+    > control_rod_down(50)
+------------
+
+>>> Removing medium‑priority event: control_rod_up
+
+--- TREE ---
+> core_meltdown(100)
+    > control_rod_down(50)
+------------
+
+>>> Removing HIGH‑priority event: core_meltdown
+
+--- TREE ---
+> control_rod_down(50)
+------------
+
+
+=== FINAL STATS ===
+Queue size: 1
+Elements:
+  control_rod_down: 50
+"""
+
 
 from typing import List, Tuple
 
